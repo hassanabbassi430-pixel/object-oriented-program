@@ -5,12 +5,14 @@ namespace LibraryApp.Book
         private string name;
         private string author;
         private int copies;
+        private string category;
 
-        public BookModel(string name, string author, int copies)
+        public BookModel(string name, string author, int copies,string category)
         {
             this.name = name;
             this.author = author;
             this.copies = copies;
+            this.category = category;
         }
 
         public void SetName(string name)
@@ -47,10 +49,20 @@ namespace LibraryApp.Book
             return this.copies;
         }
 
+        public void SetCopies(string category)
+        {
+            this.category=category;
+
+        }
+        public string Getcategory()
+        {
+            return this.category;
+        }
+
         // this is how a book is written in the file
         public override string ToString()
         {
-            return $"{name},{author},{copies}";
+            return $"{name},{author},{copies},{category}";
         }
     }
 }

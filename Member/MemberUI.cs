@@ -89,6 +89,21 @@ namespace LibraryApp.Member
             ShowAllMembers();
 
             int index = InputHelper.ReadNumber("\nEnter member index to delete: ");
+            Console.WriteLine("are you sure:");
+            List<MemberModel> members = service.GetAllMembers();
+            if (index < 0 || index>= members.Count())
+            {
+                Console.WriteLine("invaid index");
+                return;
+            }
+            Console.WriteLine("delete " + members[index].GetName() + " ?( y/n )");
+
+
+            string answer= Console.ReadLine();
+            if (answer.Trim().ToLower() != "y")
+            {
+                Console.WriteLine("member not delted");
+            }
 
             Console.WriteLine(service.DeleteMember(index));
         }
@@ -110,6 +125,7 @@ namespace LibraryApp.Member
             {
                 Console.WriteLine(i + ". " + members[i].GetName() +
                                   " | Phone: " + members[i].GetPhone());
+                Console.WriteLine("Total Members:" + members.Count());
             }
         }
     }

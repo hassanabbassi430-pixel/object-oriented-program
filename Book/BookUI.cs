@@ -1,4 +1,5 @@
 using LibraryApp.Common;
+using System.Reflection;
 
 namespace LibraryApp.Book
 {
@@ -24,13 +25,16 @@ namespace LibraryApp.Book
                 Console.WriteLine("4. View All Books");
                 Console.WriteLine("5. Search Book");
                 Console.WriteLine("6. Sort Books");
-                Console.WriteLine("7. Back");
+                Console.WriteLine("7. show lowstock");
+                Console.WriteLine("8.show range of books");
+                Console.WriteLine("9.Filter Code");
+                Console.WriteLine("10.EXIST");
                 Console.ForegroundColor = ConsoleColor.White;
 
                 Console.Write("Enter option: ");
                 string option = Console.ReadLine();
 
-                if (option == "7")
+                if (option == "10")
                 {
                     break;
                 }
@@ -58,6 +62,18 @@ namespace LibraryApp.Book
                 {
                     SortBooks();
                 }
+                else if (option == "7")
+                {
+                    ShowLowStock();
+                }
+                else if (option == "8")
+                {
+                    ShowRangeStock();
+                }
+                else if (option == "9")
+                {
+                    ShowFilterData();
+                }
                 else
                 {
                     Console.WriteLine("Invalid option!");
@@ -77,8 +93,10 @@ namespace LibraryApp.Book
             string author = Console.ReadLine();
 
             int copies = InputHelper.ReadNumber("Enter number of copies: ");
+            Console.Write("Enter book category: ");
+            string category = Console.ReadLine();
 
-            Console.WriteLine(service.AddBook(name, author, copies));
+            Console.WriteLine(service.AddBook(name, author, copies, category));
         }
 
         private void UpdateCopies()
@@ -96,6 +114,22 @@ namespace LibraryApp.Book
             ShowAllBooks();
 
             int index = InputHelper.ReadNumber("\nEnter book index to delete: ");
+            Console.WriteLine("are you sure:");
+            List<BookModel> books = service.GetAllBooks();
+
+            if (index < 0 || index >= books.Count)
+            {
+                Console.WriteLine("Invalid index!");
+                return;
+            }
+
+            Console.Write("Delete \"" + books[index].GetName() + "\"? (y/n): ");
+            string answer = Console.ReadLine();
+            if (answer.Trim().ToLower() != "y")
+            {
+                Console.WriteLine("no book deleted.deletion cancelled");
+                return;
+            }
 
             Console.WriteLine(service.DeleteBook(index));
         }
@@ -117,16 +151,17 @@ namespace LibraryApp.Book
             {
                 Console.WriteLine(i + ". " + books[i].GetName() +
                                   " | Author: " + books[i].GetAuthor() +
-                                  " | Copies: " + books[i].GetCopies());
+                                  " | Copies: " + books[i].GetCopies()+
+                                  " | category" + books[i].Getcategory());
             }
         }
 
         private void SearchBook()
         {
-            Console.Write("Enter book name: ");
-            string name = Console.ReadLine();
+            Console.Write("Enter author name : ");
+            string author = Console.ReadLine();
 
-            List<BookModel> found = service.SearchBook(name);
+            List<BookModel> found = service.SearchBook(author);
 
             if (found.Count == 0)
             {
@@ -138,9 +173,47 @@ namespace LibraryApp.Book
             {
                 Console.WriteLine("Found: " + book.GetName() +
                                   " | Author: " + book.GetAuthor() +
-                                  " | Copies: " + book.GetCopies());
+                                  " | Copies: " + book.GetCopies()+
+                                  " | category" + book.Getcategory());
             }
         }
+
+        private void ShowFilterData()
+        {
+            Console.Write("Enter author name : ");
+            string author = Console.ReadLine();
+
+            Console.Write("Enter category : ");
+            string category = Console.ReadLine();
+
+            int mini = InputHelper.ReadNumber("Enter mini of book: ");
+            int max = InputHelper.ReadNumber("Enter max  of book: ");
+
+            List<BookModel> found = service.GetFilterData(author, mini, max, category);
+
+            if (found.Count == 0)
+            {
+                Console.WriteLine("Book not found!");
+                return;
+            }
+
+
+                foreach (BookModel book in found)
+                {
+                    Console.WriteLine("Found: " + book.GetName() +
+                                      " | Author: " + book.GetAuthor() +
+                                      " | Copies: " + book.GetCopies() +
+                                      " | category" + book.Getcategory());
+
+                    Console.WriteLine(book.GetName() + " | Copies: " + book.GetCopies());
+                }
+            }
+        
+
+
+            
+        
+
 
         private void SortBooks()
         {
@@ -148,6 +221,48 @@ namespace LibraryApp.Book
 
             Console.WriteLine("Books sorted successfully!");
             ShowAllBooks();
+        }
+
+        private void ShowRangeStock()
+        {
+            int mini = InputHelper.ReadNumber("Enter mini of book: ");
+            int max = InputHelper.ReadNumber("Enter max  of book: ");
+
+            List<BookModel> middle = service.GetStockRangeBooks(mini,max);
+            
+            if (middle.Count == 0)
+            {
+                Console.WriteLine("No books found!");
+                return;
+            }
+
+            Console.WriteLine("\n---  STOCK BOOKS IN RANGE ---");
+
+            foreach (BookModel book in middle)
+            {
+                Console.WriteLine(book.GetName() + " | Copies: " + book.GetCopies());
+            }
+        }
+
+
+        private void ShowLowStock()
+        {
+            int limit = InputHelper.ReadNumber("Show books with copies up to: ");
+
+            List<BookModel> low = service.GetLowStockBooks(limit);
+
+            if (low.Count == 0)
+            {
+                Console.WriteLine("No books found!");
+                return;
+            }
+
+            Console.WriteLine("\n--- LOW STOCK BOOKS ---");
+
+            foreach (BookModel book in low)
+            {
+                Console.WriteLine(book.GetName() + " | Copies: " + book.GetCopies());
+            }
         }
     }
 }

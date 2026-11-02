@@ -32,7 +32,12 @@ namespace LibraryApp.Common
                 }
                 else if (option == "4")
                 {
-                    break;
+                    Console.WriteLine("Are  you sure(y/n):");
+                    string ans = Console.ReadLine();
+                    if (ans.Trim().ToLower() == "yes")
+                    {
+                        break;
+                    }
                 }
             }
         }

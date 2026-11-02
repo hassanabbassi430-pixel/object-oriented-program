@@ -50,13 +50,14 @@ namespace LibraryApp.Book
                 {
                     string[] parts = line.Split(',');
 
-                    if (parts.Length == 3)
+                    if (parts.Length == 4)
                     {
                         string name = parts[0];
                         string author = parts[1];
                         int copies = int.Parse(parts[2]);
+                        string category = parts[3];
 
-                        BookModel book = new BookModel(name, author, copies);
+                        BookModel book = new BookModel(name, author, copies,category);
                         books.Add(book);
                     }
                 }
